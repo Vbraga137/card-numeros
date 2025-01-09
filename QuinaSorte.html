@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selecione 10 Números</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 10px;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+    .number {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #f9f9f9;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .number.selected {
+      background: #4caf50;
+      color: white;
+    }
+    .button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h1>Escolha até 10 Números</h1>
+  <label for="nome">Seu Nome:</label>
+  <input type="text" id="nome" placeholder="Digite seu nome" required>
+  <br><br>
+  <label for="email">Seu E-mail:</label>
+  <input type="email" id="email" placeholder="Digite seu e-mail" required>
+  <br><br>
+  <div class="card">
+    <script>
+      for (let i = 1; i <= 80; i++) {
+        document.write(`<div class="number" onclick="toggleNumber(this)">${i}</div>`);
+      }
+    </script>
+  </div>
+  <button class="button" id="submit-btn" disabled onclick="submitSelection()">Enviar</button>
+
+  <script>
+    let selectedNumbers = [];
+    const maxSelection = 10;
+    const submitBtn = document.getElementById('submit-btn');
+
+    function toggleNumber(element) {
+      const number = parseInt(element.textContent);
+      if (selectedNumbers.includes(number)) {
+        selectedNumbers = selectedNumbers.filter(n => n !== number);
+        element.classList.remove('selected');
+      } else if (selectedNumbers.length < maxSelection) {
+        selectedNumbers.push(number);
+        element.classList.add('selected');
+      }
+      submitBtn.disabled = selectedNumbers.length !== maxSelection;
+    }
+
+    async function submitSelection() {
+      const nome = document.getElementById('nome').value;
+      const email = document.getElementById('email').value;
+
+      if (!nome || !email) {
+        alert('Por favor, preencha seu nome e e-mail.');
+        return;
+      }
+
+      const response = await fetch('https://script.google.com/macros/s/AKfycbxA0vlsExGpA86vdq_XR90ahlUgUS6_GTRjWjc6xttauPLnP-pjy2oXHKEI-V7-eFTr/exec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome, email, numeros: selectedNumbers }),
+      });
+
+      if (response.ok) {
+        alert('Seleção enviada com sucesso!');
+      } else {
+        alert('Erro ao enviar a seleção.');
+      }
+    }
+  </script>
+</body>
+</html>
